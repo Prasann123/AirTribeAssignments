@@ -1,11 +1,16 @@
 const taskRoutes = require("express").Router();
 const bodyParser = require("body-parser");
 const tasks = require("../tasks");
-const validateTasks = require("../Validator/validator");
+const {
+  validateTasks,
+  isValidDate,
+  isNullOrUndefined,
+} = require("../Validator/validator");
 const { isValid, parseISO } = require("date-fns");
 
 taskRoutes.use(bodyParser.json());
 
+//insert a new task using post
 taskRoutes.post("/", (req, res) => {
   const tasksDetails = req.body;
 
@@ -20,6 +25,8 @@ taskRoutes.post("/", (req, res) => {
     return res.status(400).json(validationResult.message);
   }
 });
+
+//update priorities based on id
 taskRoutes.put("/priorities/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
   const updatePriority = req.body;
@@ -30,20 +37,20 @@ taskRoutes.put("/priorities/:id", (req, res) => {
 
   return res.status(200).json(tasksUpdate);
 });
+
+//update tasks with put single update or multiple fields update it works dynamically
 taskRoutes.put("/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
   const taskRecieved = req.body;
   const errors = {};
   const tobeUpdatedTask = tasks.find((task) => task.id === parseInt(taskId));
 
-  if (
-    tobeUpdatedTask === null ||
-    tobeUpdatedTask === undefined ||
-    tobeUpdatedTask.length === 0
-  ) {
+  if (isNullOrUndefined(tobeUpdatedTask)) {
     return res.status(404).json("Task requested does not exist.");
   }
   //const validationResult = validateTasks(tasksDetails);
+
+  //this validation needs to be refactored into validation section.
   if ("title" in taskRecieved && typeof taskRecieved.title !== "string") {
     errors.status = "title must be string";
   } else if ("title" in taskRecieved) {
@@ -81,19 +88,17 @@ taskRoutes.put("/:id", (req, res) => {
   }
 
   if (Object.keys(errors).length <= 0) {
-    console.log(tobeUpdatedTask);
-    console.log(taskRecieved);
     return res.status(200).json({ ...tobeUpdatedTask, ...taskRecieved });
   } else {
     return res.status(404).json({ errors });
   }
 });
+
+//get all tasks as well filter and soring using createDate and priority
 taskRoutes.get("/", (req, res) => {
   const sortBy = req.query.sortBy;
   const filterBy = req.query.filterBycompleted;
   //const filterBy = req.query.filterBycompleted;
-  console.log(sortBy);
-  console.log(filterBy);
   let taskDetails = [...tasks];
   if (sortBy == "createDate") {
     if (isValidDate(sortBy))
@@ -121,7 +126,6 @@ taskRoutes.get("/", (req, res) => {
   }
   if (filterBy) {
     if (typeof filterBy !== "boolean") {
-      console.log(typeof filterBy);
       return res.status(404).json("Incorrect format");
     }
     taskDetails = taskDetails.filter((task) => task.completed == filterBy);
@@ -130,6 +134,7 @@ taskRoutes.get("/", (req, res) => {
   return res.status(200).json(taskDetails);
 });
 
+//get tasks based on priority with specific endpoint
 taskRoutes.get("/tasks/priority/:priority", (req, res) => {
   const priority = req.params.priority;
   if (!["high", "low", "medium"].includes(priority.toLowerCase())) {
@@ -140,41 +145,29 @@ taskRoutes.get("/tasks/priority/:priority", (req, res) => {
   });
   return res.status(200).json(filteredTasks);
 });
+
+//Delete Task based on id
 taskRoutes.delete("/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
   const istaskExist = tasks.filter((task) => task.id === parseInt(taskId));
-  if (
-    istaskExist === null ||
-    istaskExist === undefined ||
-    istaskExist.length === 0
-  ) {
+  if (isNullOrUndefined(istaskExist)) {
     return res.status(404).json("Task requested does not exist.");
   }
   const deletedTask = tasks.filter((task) => task.id !== parseInt(taskId));
   console.log(deletedTask);
   return res.status(200).json("Task requested has been successfully deleted");
 });
+
+//get tasks based on id
 taskRoutes.get("/:id", (req, res) => {
   let taskid = req.params.id;
 
   let resultTask = tasks.filter((task) => task.id === parseInt(taskid));
-  if (
-    resultTask === null ||
-    resultTask === undefined ||
-    resultTask.length === 0
-  ) {
+  if (istaskExist(resultTask)) {
     return res.status(404).json("Task requested does not exist.");
   }
   console.log(resultTask);
   return res.status(200).json(resultTask);
 });
-function isNullOrUndefined(value) {
-  return value === null || value === undefined;
-}
-function isValidDate(dateString) {
-  const parsedDate = parseISO(dateString);
-  const isValidDate = isValid(parsedDate);
-  console.log(isValidDate);
-  return isValidDate;
-}
+
 module.exports = taskRoutes;

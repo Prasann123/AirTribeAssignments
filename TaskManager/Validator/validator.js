@@ -1,4 +1,5 @@
 const tasks = require("../tasks");
+const { isValid, parseISO } = require("date-fns");
 
 const validateTasks = ({
   id,
@@ -23,5 +24,13 @@ const validateTasks = ({
     return { status: false, message: "Invalid completion status" };
   }
 };
-
-module.exports = validateTasks;
+function isNullOrUndefined(value) {
+  return value === null || value === undefined || value.length === 0;
+}
+function isValidDate(dateString) {
+  const parsedDate = parseISO(dateString);
+  const isValidDate = isValid(parsedDate);
+  console.log(isValidDate);
+  return isValidDate;
+}
+module.exports = { validateTasks, isValidDate, isNullOrUndefined };

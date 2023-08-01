@@ -16,10 +16,9 @@ taskRoutes.post("/", (req, res) => {
 
   const validationResult = validateTasks(tasksDetails);
   if (validationResult.status) {
-    console.log(tasksDetails);
     let AlteredTask = JSON.parse(JSON.stringify(tasks));
     AlteredTask.push(tasksDetails);
-    console.log(AlteredTask);
+
     return res.status(200).json("Task has been added successfully");
   } else {
     return res.status(400).json(validationResult.message);
@@ -30,7 +29,6 @@ taskRoutes.post("/", (req, res) => {
 taskRoutes.put("/priorities/:id", (req, res) => {
   const taskId = parseInt(req.params.id);
   const updatePriority = req.body;
-  console.log(req.bosy);
   let tasksUpdate = tasks.map((priority) =>
     priority.id === taskId ? { ...priority, ...updatePriority } : priority
   );
@@ -129,7 +127,6 @@ taskRoutes.get("/", (req, res) => {
       return res.status(404).json("Incorrect format");
     }
     taskDetails = taskDetails.filter((task) => task.completed == filterBy);
-    console.log(taskDetails);
   }
   return res.status(200).json(taskDetails);
 });
@@ -154,7 +151,6 @@ taskRoutes.delete("/:id", (req, res) => {
     return res.status(404).json("Task requested does not exist.");
   }
   const deletedTask = tasks.filter((task) => task.id !== parseInt(taskId));
-  console.log(deletedTask);
   return res.status(200).json("Task requested has been successfully deleted");
 });
 
@@ -166,7 +162,6 @@ taskRoutes.get("/:id", (req, res) => {
   if (istaskExist(resultTask)) {
     return res.status(404).json("Task requested does not exist.");
   }
-  console.log(resultTask);
   return res.status(200).json(resultTask);
 });
 

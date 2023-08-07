@@ -37,13 +37,13 @@ const userSchema = new Schema({
       required: "preference not provided",
     },
   ],
-  readTitles: [
+  readSourceIds: [
     {
       type: String,
       default: [],
     },
   ],
-  favouriteTitles: [
+  favouriteSourceIds: [
     {
       type: String,
       default: [],

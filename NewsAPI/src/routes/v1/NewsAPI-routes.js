@@ -4,7 +4,9 @@ const {
   getPreferences,
   putPreferences,
   getNews,
-  postReadNews,
+  postFavouriteSources,
+  getFavoriteSources,
+  getSearchNews,
 } = require("../../controllers/newsAPI-controller");
 const {
   NewsMiddlewares,
@@ -27,6 +29,20 @@ router.put(
 );
 router.get("/FetchNews", VerifyTokenMiddlewares.verifyJwtToken, getNews);
 
-router.post("/:id/read", VerifyTokenMiddlewares.verifyJwtToken, postReadNews);
+router.post(
+  "/:id/favSources",
+  VerifyTokenMiddlewares.verifyJwtToken,
+  postFavouriteSources
+);
+router.get(
+  "/favSources",
+  VerifyTokenMiddlewares.verifyJwtToken,
+  getFavoriteSources
+);
+router.get(
+  "/SearchNews/:Keywords",
+  VerifyTokenMiddlewares.verifyJwtToken,
+  getSearchNews
+);
 
 module.exports = router;

@@ -1,0 +1,20 @@
+  {
+    "username": "prasanna",
+    "email": "prasanna@gmail.com",
+    "password": "pass123",
+    "Country": "in",
+    "preference": "Sports"
+  }
+
+  {
+    "email": "prasanna@gmail.com",
+    "password": "pass123"
+  }
+
+  {
+    "username": "prasanna",
+    "email": "prasanna5@gmail.com",
+    "password": "pass123",
+    "Country": "in",
+    "preference": ["Sports","Politics"]
+  }

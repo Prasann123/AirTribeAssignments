@@ -13,7 +13,14 @@ const cacheService = new cacheHelper();
 const getPreferences = async (req, res) => {
   try {
     tokenResponseValidator(req, res);
+    if (cacheService.has("getUserPreferences")) {
+      const cacheDate = cacheService.get("getUserPreferences");
+      if (cacheDate) {
+        return res.status(StatusCodes.OK).send(cacheDate);
+      }
+    }
     const userDetails = await user.findOne({ email: req.user.email });
+    cacheService.set("getUserPreferences", userDetails.preference);
     return res
       .status(StatusCodes.OK)
       .send({ userpreferences: userDetails.preference });
@@ -41,6 +48,8 @@ const putPreferences = async (req, res) => {
     userDetails.preference = preferences;
     userDetails.updatedDate = Date.now();
     await userDetails.save();
+    cacheService.set("getUserPreferences", userDetails.preference);
+    cacheService.del("getUserNews");
     return res
       .status(StatusCodes.OK)
       .send({ message: "Preferences updated successfully" });
@@ -95,7 +104,7 @@ const postFavouriteSources = async (req, res) => {
     if (!userSourceIdsUpdate) {
       return res.status(StatusCodes.NOT_FOUND).send({ error: "Invalid user" });
     }
-    cacheService.del("");
+
     return res.status(StatusCodes.OK).send(userSourceIdsUpdate);
   } catch (error) {
     return res

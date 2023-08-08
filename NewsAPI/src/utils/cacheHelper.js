@@ -4,11 +4,16 @@ const scheduleCache = require("node-schedule");
 class cacheHelper {
   constructor(ttInSeconds = 3000) {
     this.cache = new NodeCache({ stdTTL: ttInSeconds });
+    this.scheduleCacheUpdate();
   }
 
   scheduleCacheUpdate() {
-    const updateCacheTimer = scheduleCache.scheduleJob();
+    const updateCacheTimer = scheduleCache.scheduleJob("0 * * * *", () => {
+      this.updateCache();
+    });
   }
+
+  updateCache() {}
 
   get(key) {
     return this.cache.get(key);

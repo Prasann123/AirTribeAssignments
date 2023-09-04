@@ -1,0 +1,12 @@
+select T.Theatre_Name,S.Show_Date,S.Show_Time,M.Movie_name,C.Certification_Name,
+Typ.Type,L.Language_name,S.Price,
+S.Available_Seats,SO.Sound_Type_Name,G.Genre_Name
+from BMS_Movies M
+inner join BMS_Movies_Showtime S on S.Movie_id = M.Movie_id
+inner join BMS_Theatres T on T.Theatre_id = S.Theatre_id
+inner join BMS_movie_Certification C on C.Certification_Id = M.Certification_Id
+inner join BMS_Movies_Type Typ on Typ.type_id = M.Type_Id
+inner join BMS_Languages L on L.Language_id =M.Language_id
+inner join BMS_Sound_Type SO on SO.Sound_Type_id =T.Sound_Type_id
+inner join BMS_movie_genres G on G.Genre_Id =M.Genre_Id
+where S.show_Date between '2023-09-01' and '2023-09-30'  and T.IsActive = 1
